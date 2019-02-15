@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ai.abstraction.EconomyMilitaryRush;
 import ai.abstraction.HeavyDefense;
@@ -24,7 +25,7 @@ import rts.units.UnitTypeTable;
 
 public class PGSvsScripts {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Map<String,AI> matchups = new HashMap<>();
 		
 		UnitTypeTable types = new UnitTypeTable();
@@ -62,6 +63,18 @@ public class PGSvsScripts {
 			new SimpleSqrtEvaluationFunction3(), types, 
 			new AStarPathFinding(), portfolio
 		);
+		
+		Runner runner = new Runner();
+		
+		//FIXME: erro porque randAI == null in PGS class
+		for(Entry<String, AI> entry : matchups.entrySet()){
+			//key is the map, value is the AI
+			System.out.println("Match is PGS vs " + entry.getValue());
+			//runs two matches switching the player positions
+			runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), types);
+			System.out.println("- now it is " + entry.getValue() + " vs PGS");
+			runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), types);
+		}
 
 	}
 
