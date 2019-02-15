@@ -127,6 +127,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
         defaultScript = new POLightRush(a_utt);
         //defaultScript = new POWorkerRush(a_utt);
         this.scripts = scripts;
+        randAI = new RandomBiasedAI(a_utt);
         //The next two lines is for calling the set Z of scripts created with the BasicExpandedConfigurableScript class
 
     }
