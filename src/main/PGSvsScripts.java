@@ -66,7 +66,6 @@ public class PGSvsScripts {
 		
 		Runner runner = new Runner();
 		
-		//FIXME: erro porque randAI == null in PGS class
 		for(Entry<String, AI> entry : matchups.entrySet()){
 			//key is the map, value is the AI
 			System.out.println("Match is PGS vs " + entry.getValue());
