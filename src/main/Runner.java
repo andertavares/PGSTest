@@ -45,7 +45,7 @@ public class Runner {
         if (physicalGameState.getHeight() == 32) {
             MAXCYCLES = 7000;
         }
-        if (physicalGameState.getHeight() >= 64) {
+        if (physicalGameState.getHeight() == 64) {
             MAXCYCLES = 12000;
         }
         
