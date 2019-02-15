@@ -14,8 +14,12 @@ import ai.abstraction.RangedDefense;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerDefense;
 import ai.abstraction.WorkerRush;
+import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.abstraction.pathfinding.PathFinding;
 import ai.asymmetric.PGS.PGSSCriptChoiceRandom;
 import ai.core.AI;
+import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import rts.units.UnitTypeTable;
 
 public class PGSvsScripts {
@@ -46,7 +50,18 @@ public class PGSvsScripts {
 		);
 		
 		//instantiates PGS^s from the paper 'Evolving Action Abstractions'
-		PGSSCriptChoiceRandom pgs_s = new PGSSCriptChoiceRandom(types, portfolio);
+		//parameters:
+		int time = 100;		//time in milliseconds
+		int playouts = -1; 	//do as many playouts as you can
+		int lookahead = 100; //lookahead in number of frames
+		int pgsIter = 1; //I in PGS class, not used
+		int oppReps = 1; //R in PGS class, not used
+		
+		PGSSCriptChoiceRandom pgs_s = new PGSSCriptChoiceRandom(
+			time, playouts, lookahead, pgsIter, oppReps, 
+			new SimpleSqrtEvaluationFunction3(), types, 
+			new AStarPathFinding(), portfolio
+		);
 
 	}
 
