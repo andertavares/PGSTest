@@ -49,6 +49,7 @@ public class Runner {
             MAXCYCLES = 12000;
         }
         
+        MAXCYCLES = 10;
         /*
         Variáveis para coleta de tempo
 	     */
@@ -66,54 +67,45 @@ public class Runner {
 	
 	    long startTime;
 	    long timeTemp;
-	    long nextTimeToUpdate = System.currentTimeMillis() + PERIOD;
 	    do {
-	        if (System.currentTimeMillis() >= nextTimeToUpdate) {
-	            totalAction++;
-	            startTime = System.currentTimeMillis();
-	
-	            PlayerAction pa1 = ai1.getAction(0, gs);
-	            //dados de tempo ai1
-	            timeTemp = (System.currentTimeMillis() - startTime);
-	            sumAi1 += timeTemp;
-	            //coleto tempo mínimo
-	            if (ai1TempoMin > timeTemp) {
-	                ai1TempoMin = timeTemp;
-	            }
-	            //coleto tempo maximo
-	            if (ai1TempoMax < timeTemp) {
-	                ai1TempoMax = timeTemp;
-	            }
-	
-	            startTime = System.currentTimeMillis();
-	            PlayerAction pa2 = ai2.getAction(1, gs);
-	            //dados de tempo ai2
-	            timeTemp = (System.currentTimeMillis() - startTime);
-	            sumAi2 += timeTemp;
-	            //coleto tempo mínimo
-	            if (ai2TempoMin > timeTemp) {
-	                ai2TempoMin = timeTemp;
-	            }
-	            //coleto tempo maximo
-	            if (ai2TempoMax < timeTemp) {
-	                ai2TempoMax = timeTemp;
-	            }
-	
-	            gs.issueSafe(pa1);
-	            gs.issueSafe(pa2);
-	
-	            // simulate:
-	            gameover = gs.cycle();
-	            nextTimeToUpdate += PERIOD;
-	            System.out.print(String.format("\rExecuted %8d frames.", gs.getTime()));
-	        } else {
-	            try {
-	                Thread.sleep(1);
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
-	        }
-	        //avaliacao de tempo
+            totalAction++;
+            startTime = System.currentTimeMillis();
+
+            PlayerAction pa1 = ai1.getAction(0, gs);
+            //dados de tempo ai1
+            timeTemp = (System.currentTimeMillis() - startTime);
+            sumAi1 += timeTemp;
+            //coleto tempo mínimo
+            if (ai1TempoMin > timeTemp) {
+                ai1TempoMin = timeTemp;
+            }
+            //coleto tempo maximo
+            if (ai1TempoMax < timeTemp) {
+                ai1TempoMax = timeTemp;
+            }
+
+            startTime = System.currentTimeMillis();
+            PlayerAction pa2 = ai2.getAction(1, gs);
+            //dados de tempo ai2
+            timeTemp = (System.currentTimeMillis() - startTime);
+            sumAi2 += timeTemp;
+            //coleto tempo mínimo
+            if (ai2TempoMin > timeTemp) {
+                ai2TempoMin = timeTemp;
+            }
+            //coleto tempo maximo
+            if (ai2TempoMax < timeTemp) {
+                ai2TempoMax = timeTemp;
+            }
+
+            gs.issueSafe(pa1);
+            gs.issueSafe(pa2);
+
+            // simulate:
+            gameover = gs.cycle();
+            System.out.print(String.format("\rExecuted %8d frames.", gs.getTime()));
+
+            //avaliacao de tempo
 	        duracao = Duration.between(timeInicial, Instant.now());
 	
 	    } while (!gameover && (gs.getTime() < MAXCYCLES) && (duracao.toMinutes() < 7));
@@ -144,6 +136,7 @@ public class Runner {
         }
         String nameArquivo = pathLog + "match_" + sIA1 + "_" + sIA2 + "_" + sMap + "_" + ".scv";
         File arqLog = new File(nameArquivo);
+        System.out.println("Output file: " + arqLog.getAbsolutePath());
         if (!arqLog.exists()) {
             arqLog.createNewFile();
         }
