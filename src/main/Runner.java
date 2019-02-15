@@ -45,7 +45,7 @@ public class Runner {
         if (physicalGameState.getHeight() == 32) {
             MAXCYCLES = 7000;
         }
-        if (physicalGameState.getHeight() == 64) {
+        if (physicalGameState.getHeight() >= 64) {
             MAXCYCLES = 12000;
         }
         
@@ -105,6 +105,7 @@ public class Runner {
 	            // simulate:
 	            gameover = gs.cycle();
 	            nextTimeToUpdate += PERIOD;
+	            System.out.print(String.format("\rExecuted %8d frames.", gs.getTime()));
 	        } else {
 	            try {
 	                Thread.sleep(1);
@@ -115,7 +116,7 @@ public class Runner {
 	        //avaliacao de tempo
 	        duracao = Duration.between(timeInicial, Instant.now());
 	
-	    } while (!gameover && (gs.getTime() < 5000) && (duracao.toMinutes() < 7));
+	    } while (!gameover && (gs.getTime() < MAXCYCLES) && (duracao.toMinutes() < 7));
 	
 	    log.add("Total de actions= " + totalAction + " sumAi1= " + sumAi1 + " sumAi2= " + sumAi2 + "\n");
 	
