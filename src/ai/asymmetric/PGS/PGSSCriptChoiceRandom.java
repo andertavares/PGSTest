@@ -272,7 +272,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
     @Override
     public String toString() {
         //return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + LOOKAHEAD + ", " + I + ", " + R + ", " + evaluation + ", " + pf + ")";
-        return getClass().getSimpleName() + "_" + tuplaInScripts + "_" + qtdSumPlayout + "_" + LOOKAHEAD;
+        return getClass().getSimpleName() + "-" + tuplaInScripts + "-" + qtdSumPlayout + "-" + LOOKAHEAD;
     }
 
     public int getPlayoutLookahead() {
