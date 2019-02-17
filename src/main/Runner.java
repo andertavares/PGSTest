@@ -52,7 +52,7 @@ public class Runner {
             MAXCYCLES = 12000;
         }
         
-        MAXCYCLES = 10; //uncomment to run super short matches
+        //MAXCYCLES = 10; //uncomment to run super short matches
         
         /*
         Variáveis para coleta de tempo
