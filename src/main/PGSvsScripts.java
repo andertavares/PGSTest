@@ -16,10 +16,8 @@ import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerDefense;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
-import ai.abstraction.pathfinding.PathFinding;
 import ai.asymmetric.PGS.PGSSCriptChoiceRandom;
 import ai.core.AI;
-import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import rts.units.UnitTypeTable;
 
@@ -65,14 +63,19 @@ public class PGSvsScripts {
 		);
 		
 		Runner runner = new Runner();
+		int rounds = 10;
 		
 		for(Entry<String, AI> entry : matchups.entrySet()){
 			//key is the map, value is the AI
-			System.out.println("Match is PGS vs " + entry.getValue());
-			//runs two matches switching the player positions
-			runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), types);
-			System.out.println("- now it is " + entry.getValue() + " vs PGS");
-			runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), types);
+			
+			for(int r = 1; r <= rounds; r++){
+				System.out.println("Round: #" + r);
+				System.out.println("Match is PGS vs " + entry.getValue());
+				//runs two matches switching the player positions
+				runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), r, types);
+				System.out.println("- now it is " + entry.getValue() + " vs PGS");
+				runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), r, types);
+			}
 		}
 
 	}
