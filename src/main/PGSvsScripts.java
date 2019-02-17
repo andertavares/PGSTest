@@ -22,6 +22,15 @@ import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import data.MatchData;
 import rts.units.UnitTypeTable;
 
+/**
+ * Runs matches between PGS and the best script for each map according to the paper of A1N, A2N and A3N.
+ * PGS version is constructed according to the paper 'Evolving Action Abstractions (...)'
+ * 
+ * TODO parameterize output dir and update the script accordingly
+ * 
+ * @author anderson
+ *
+ */
 public class PGSvsScripts {
 
 	public static void main(String[] args) throws Exception {
