@@ -19,6 +19,7 @@ import ai.abstraction.pathfinding.AStarPathFinding;
 import ai.asymmetric.PGS.PGSSCriptChoiceRandom;
 import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
+import data.MatchData;
 import rts.units.UnitTypeTable;
 
 public class PGSvsScripts {
@@ -69,12 +70,17 @@ public class PGSvsScripts {
 			//key is the map, value is the AI
 			
 			for(int r = 1; r <= rounds; r++){
+				MatchData data;
+				
 				System.out.println("Round: #" + r);
 				System.out.println("Match is PGS vs " + entry.getValue());
 				//runs two matches switching the player positions
-				runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), r, types);
+				data = runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), r, types);
+				runner.recordMatchData("output", data);
+				
 				System.out.println("- now it is " + entry.getValue() + " vs PGS");
-				runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), r, types);
+				data = runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), r, types);
+				runner.recordMatchData("output", data);
 			}
 		}
 

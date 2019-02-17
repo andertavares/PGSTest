@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import ai.core.AI;
 import data.MatchData;
@@ -18,7 +19,7 @@ public class Runner {
 	
 	public MatchData headlessMatch(AI ai1, AI ai2, String map, int roundNumber, UnitTypeTable types) throws Exception{
 		ArrayList<String> log = new ArrayList<>();
-		Duration duracao;
+		Duration matchDuration;
 		Instant timeInicial = Instant.now();
 		
 		MatchData data = new MatchData(ai1, ai2, map);
@@ -50,6 +51,8 @@ public class Runner {
         if (physicalGameState.getHeight() == 64) {
             MAXCYCLES = 12000;
         }
+        
+        MAXCYCLES = 10; //uncomment to run super short matches
         
         /*
         Variáveis para coleta de tempo
@@ -110,11 +113,18 @@ public class Runner {
             System.out.print(String.format("\rExecuted %8d frames.", gs.getTime()));
 
             //avaliacao de tempo
-	        duracao = Duration.between(timeInicial, Instant.now());
+	        matchDuration = Duration.between(timeInicial, Instant.now());
 	
-	    } while (!gameover && (gs.getTime() < MAXCYCLES) && (duracao.toMinutes() < 7));
+	    } while (!gameover && (gs.getTime() < MAXCYCLES) && (matchDuration.toMinutes() < 7));
 
-	    // game over, compute the average time per frame
+	    // game over, record post-game data
+	    data.winner = gs.winner();
+	    data.frames = gs.getTime();
+	    data.duration = matchDuration;
+
+	    
+	    		
+	    // compute the average time per frame
 	    data.avgTimeP1 = (data.totalTimeP1 / (float) gs.getTime());
 	    data.avgTimeP2 = (data.totalTimeP2 / (float) gs.getTime());
 	
@@ -130,15 +140,14 @@ public class Runner {
 	    log.add("Game Over");
 	
 	    if (gs.winner() == -1) {
-	        System.out.println("Empate!" + ai1.toString() + " vs " + ai2.toString() + " Max Cycles =" + MAXCYCLES + " Time:" + duracao.toMinutes());
+	        System.out.println("Empate!" + ai1.toString() + " vs " + ai2.toString() + " Max Cycles =" + MAXCYCLES + " Time:" + matchDuration.toMinutes());
 	    }
 		return data;
 	
 	    //recordLog("output", log, ai1.toString(), ai2.toString(), map);
 	}
 	
-	@SuppressWarnings("unused")
-	private void recordMatchData(String outDir, MatchData data){
+	public void recordMatchData(String outDir, MatchData data){
 		
 		//ensures outDir has a trailing slash
 		if (!outDir.endsWith("/")) { 
@@ -155,7 +164,7 @@ public class Runner {
     		FileWriter newFile;
 			try {
 				newFile = new FileWriter(output, false); //test if the file exists first, because it creates the file upon instantiation
-				newFile.write("#winner,frames,duration(s),totalTime1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2\n");
+				newFile.write("#winner,frames,duration,totalTime1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2\n");
 	    		newFile.close();
 			} catch (IOException e) {
 				System.err.println("Error while creating the output file");
@@ -169,10 +178,13 @@ public class Runner {
 		try {
 			appender = new FileWriter(output, true);
 			// field order: winner,frames,duration(s),totalTimeAI1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2
-			appender.write(String.format(
-				"%d,%ld,%ld,%d,%d,%d,%f," //winner,frames,duration,total1,min1,max1,avg1
-				+ "%d,%d,%d,%f\n", //total2,min2,max2,avg2
-				data.winner, data.frames, data.duration.getSeconds(), data.totalTimeP1, data.minTimeP1, data.maxTimeP1, data.avgTimeP1,
+			appender.write(String.format( Locale.US, //ensure dot as a decimal separator
+				"%d,%d,%d," //winner,frames,duration
+				+ "%d,%d,%d,%f," //total1,min1,max1,avg1
+				+ "%d,%d,%d,%f%n", //total2,min2,max2,avg2,line break 
+				
+				data.winner, data.frames, data.duration.getSeconds(), 
+				data.totalTimeP1, data.minTimeP1, data.maxTimeP1, data.avgTimeP1,
 				data.totalTimeP2, data.minTimeP2, data.maxTimeP2, data.avgTimeP2
 			));
 			//logger.debug("Successfully wrote to {}", path);
