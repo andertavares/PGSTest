@@ -15,7 +15,8 @@ import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 
 public class Runner {
-	public  void headlessMatch(AI ai1, AI ai2, String map, UnitTypeTable types) throws Exception{
+	
+	public void headlessMatch(AI ai1, AI ai2, String map, int roundNumber, UnitTypeTable types) throws Exception{
 		ArrayList<String> log = new ArrayList<>();
 		Duration duracao;
 		Instant timeInicial = Instant.now();
@@ -30,7 +31,6 @@ public class Runner {
 
         GameState gs = new GameState(physicalGameState, types);
         int MAXCYCLES = 20000;
-        int PERIOD = 20;
         boolean gameover = false;
 
         if (physicalGameState.getHeight() == 8) {
@@ -49,7 +49,6 @@ public class Runner {
             MAXCYCLES = 12000;
         }
         
-        MAXCYCLES = 10;
         /*
         Variáveis para coleta de tempo
 	     */
@@ -125,21 +124,25 @@ public class Runner {
 	        System.out.println("Empate!" + ai1.toString() + " vs " + ai2.toString() + " Max Cycles =" + MAXCYCLES + " Time:" + duracao.toMinutes());
 	    }
 	
-	    recordLog(log, ai1.toString(), ai2.toString(), map, ".");
-	    //System.exit(0);
-    
+	    recordLog(log, ai1.toString(), ai2.toString(), map, roundNumber, "output");
 	}
 	
-	private void recordLog(ArrayList<String> log, String sIA1, String sIA2, String sMap, String pathLog) throws IOException {
+	private void recordLog(ArrayList<String> log, String sIA1, String sIA2, String sMap, int roundNumber, String pathLog) throws IOException {
         if (!pathLog.endsWith("/")) {
             pathLog += "/";
         }
-        String nameArquivo = pathLog + "match_" + sIA1 + "_" + sIA2 + "_" + sMap + "_" + ".scv";
+
+        // obtains the file name strips the full directory
+        File mapFile = new File(sMap);
+        sMap = mapFile.getName();
+        
+        String nameArquivo = pathLog + "match_" + roundNumber + "_"+ sIA1 + "_" + sIA2 + "_" + sMap + ".scv";
         File arqLog = new File(nameArquivo);
+        
         System.out.println("Output file: " + arqLog.getAbsolutePath());
-        if (!arqLog.exists()) {
+        /*if (!arqLog.exists()) {
             arqLog.createNewFile();
-        }
+        }*/
         //abre o arquivo e grava o log
         try {
             FileWriter arq = new FileWriter(arqLog, false);
