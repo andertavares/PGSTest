@@ -3,12 +3,15 @@ package data;
 import java.io.File;
 import java.time.Duration;
 
+import ai.core.AI;
+
 
 /**
  * Stores data about a match.
- * All fields are public for easy access, except for the map, 
- * which can be initialized to the path but is treated to return 
- * the name if necessary
+ * 
+ * All fields are public for easy access, except for the map. 
+ * The map can be initialized to the path but is treated to return the name if necessary.
+ * 
  * @author anderson
  *
  */
@@ -23,14 +26,14 @@ public class MatchData {
 	public int winner;
 	
 	/**
-	 * Name of the first player
+	 * First player
 	 */
-	public String p1Name;
+	private AI p1;
 	
 	/**
-	 * Name of the second player
+	 * Second player
 	 */
-	public String p2Name;
+	private AI p2;
 	
 	/**
 	 * Path to the map
@@ -43,35 +46,30 @@ public class MatchData {
 	public long frames;
 	
 	// times, in milliseconds spent by first AI's reasoning: total, minimum, maximum and average 
-	public int totalTimeAI1, minTimeAI1, maxTime1; 
-	public float avgTime1;
+	public int totalTimeP1, minTimeP1, maxTimeP1; 
+	public float avgTimeP1;
 	
 	// times, in milliseconds spent by first AI's reasoning: total, minimum, maximum and average
-	public int totalTimeAI2, minTime2, maxTime2; 
-	public float avgTime2;
+	public int totalTimeP2, minTimeP2, maxTimeP2; 
+	public float avgTimeP2;
 	
 	/**
-	 * Wall-clock time elapsed during the match
+	 * Wall-clock time elapsed for the match
 	 */
 	public Duration duration;
 	
 	/**
-	 * Does nothing, all attributes must be assigned
+	 * Initializes with the static match data.
+	 * All other fields must be directly assigned. 
+	 * @param p1
+	 * @param p2
+	 * @param map
 	 */
-	public MatchData(String p1Name, String p2Name, String map){ 
-		this.p1Name = p1Name;
-		this.p2Name = p2Name;
+	public MatchData(AI p1, AI p2, String map){ 
+		this.p1 = p1;
+		this.p2 = p2;
 		this.mapFileName = map;
 	} 
-	
-	/**
-	 * Returns a csv string with the names of the fields.
-	 * The header is preceded by a # by default and finishes with a newline
-	 * @return
-	 */
-	public static String header(){
-		return "#winner,frames,duration(s),totalActions,totalTimeAI1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2\n";
-	}
 	
 	/**
 	 * Returns the map name, without the complete path and file extension
@@ -83,6 +81,22 @@ public class MatchData {
 	}
 	
 	/**
+	 * Return the name of the source-code class of the first player
+	 * @return
+	 */
+	public String getP1Name(){
+		return p1.getClass().getSimpleName();
+	}
+	
+	/**
+	 * Return the name of the source-code class of the second player
+	 * @return
+	 */
+	public String getP2Name(){
+		return p2.getClass().getSimpleName();
+	}
+	
+	/**
 	 * Returns the (possibly complete) path to the map file
 	 * @return
 	 */
@@ -90,18 +104,6 @@ public class MatchData {
 		return mapFileName;
 	}
 	
-	/**
-	 * Returns a csv string related to this data.
-	 * The order of the fields is:
-	 * winner,totalActions,sumAI1,sumAI2,minTime1,maxTime1,avgTime1,minTime2,maxTime2,avgTime2
-	 * as given by the {@link #header()} 
-	 */
-	public String toString(){
-		return String.format(
-			"%d,%ld,%ld,%d,%d,%d,%f,%d,%d,%d,%f",
-			winner, duration.getSeconds(), frames, totalTimeAI1, minTimeAI1, maxTime1, avgTime1,
-			totalTimeAI2, minTime2, maxTime2, avgTime2
-		);
-	}
+	
 
 }
