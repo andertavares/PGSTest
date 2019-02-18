@@ -1,10 +1,6 @@
 package main;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 import ai.abstraction.EconomyMilitaryRush;
 import ai.abstraction.HeavyDefense;
@@ -21,6 +17,7 @@ import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import data.MatchData;
 import rts.units.UnitTypeTable;
+import util.Pair;
 
 /**
  * Runs matches between PGS and the best script for each map according to the paper of A1N, A2N and A3N.
@@ -34,17 +31,48 @@ import rts.units.UnitTypeTable;
 public class PGSvsScripts {
 
 	public static void main(String[] args) throws Exception {
-		Map<String,AI> matchups = new HashMap<>();
+		List<Pair<String,AI>> matchups = new ArrayList<>();
 		
 		UnitTypeTable types = new UnitTypeTable();
 	    //PhysicalGameState pgs = PhysicalGameState.load(maps.get(map), utt);
+
+		/* The 18 maps of 'Action Abstractions for CMAB Tree Search' are:
+		basesWorkers8x8A
+		FourBasesWorkers8x8
+		NoWhereToRun9x8
+		TwoBasesBarracks16x16
+		basesWorkers16x16A
+		DoubleGame24x24
+		basesWorkers24x24A
+		basesWorkers32x32A
+		BWDistantResources32x32
+		(4)BloodBath.scmA
+		(4)BloodBath.scmB
+		(4)BloodBath.scmC
+		(4)BloodBath.scmD
+		(4)Andromeda.scxE
+		(4)CircuitBreaker.scxF
+		(4)Fortress.scxA
+		(4)Python.scxB
+		(2)Destination.scxA
+		*/
 		
-		matchups.put("maps/8x8/basesWorkers8x8A.xml", new WorkerRush(types));
-		matchups.put("maps/9x8/BlockDiagonal9x8.xml", new LightRush(types));
-		matchups.put("maps/16x16/BasesWithWalls16x16.xml", new LightRush(types));
-		matchups.put("maps/24x24/basesWorkers24x24A.xml", new WorkerRush(types));
-		matchups.put("maps/24x24/basesWorkers24x24A.xml", new LightRush(types));
-		matchups.put("maps/32x32/basesWorkers32x32A.xml", new LightRush(types));
+		matchups.add(new Pair<>("maps/8x8/basesWorkers8x8A.xml", new WorkerRush(types)));
+		matchups.add(new Pair<>("maps/8x8/FourBasesWorkers8x8.xml", new WorkerRush(types)));
+
+		matchups.add(new Pair<>("maps/9x8/NoWhereToRun9x8.xml", new LightRush(types)));
+
+		matchups.add(new Pair<>("maps/16x16/TwoBasesBarracks16x16.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/16x16/basesWorkers16x16A.xml", new LightRush(types)));
+
+
+		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new WorkerRush(types)));
+		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/24x24/DoubleGame24x24.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/24x24/DoubleGame24x24.xml", new WorkerRush(types)));
+
+		matchups.add(new Pair<>("maps/32x32/basesWorkers32x32A.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/BWDistantResources32x32.xml", new LightRush(types)));
 		
 		List<AI> portfolio = Arrays.asList(
 			new WorkerRush(types), //begin: 4 rushes
@@ -75,20 +103,20 @@ public class PGSvsScripts {
 		Runner runner = new Runner();
 		int rounds = 10;
 		
-		for(Entry<String, AI> entry : matchups.entrySet()){
-			//key is the map, value is the AI
+		for(Pair<String, AI> entry : matchups){
+			//m_a is the map, m_b is the AI
 			
 			for(int r = 1; r <= rounds; r++){
 				MatchData data;
 				
 				System.out.println("Round: #" + r);
-				System.out.println("Match is PGS vs " + entry.getValue());
+				System.out.println("Match is PGS vs " + entry.m_b);
 				//runs two matches switching the player positions
-				data = runner.headlessMatch(pgs_s, entry.getValue(), entry.getKey(), r, types);
+				data = runner.headlessMatch(pgs_s, entry.m_b, entry.m_a, r, types);
 				runner.recordMatchData("output", data);
 				
-				System.out.println("- now it is " + entry.getValue() + " vs PGS");
-				data = runner.headlessMatch(entry.getValue(), pgs_s, entry.getKey(), r, types);
+				System.out.println("- now it is " + entry.m_b + " vs PGS");
+				data = runner.headlessMatch(entry.m_b, pgs_s, entry.m_a, r, types);
 				runner.recordMatchData("output", data);
 			}
 		}
