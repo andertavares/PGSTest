@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import glob
 import argparse
@@ -84,7 +86,12 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        'outputdir', help='Directory to generate the crosstables'
+        'outdir', help='Directory to generate the crosstables'
     )
 
-    # TODO parse args and call the methods
+    args = parser.parse_args()
+
+    data = analyse(args.inputdir)
+    write_crosstable(data, args.outdir)
+
+    print('DONE.')
