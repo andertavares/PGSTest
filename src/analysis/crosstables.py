@@ -94,4 +94,4 @@ if __name__ == '__main__':
     data = analyse(args.inputdir)
     write_crosstable(data, args.outdir)
 
-    print('DONE.')
+    print('DONE. Check the resulting files at %s' % args.outdir)
