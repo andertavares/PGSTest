@@ -60,7 +60,7 @@ public class PGSvsScripts {
 		matchups.add(new Pair<>("maps/8x8/basesWorkers8x8A.xml", new WorkerRush(types)));
 		matchups.add(new Pair<>("maps/8x8/FourBasesWorkers8x8.xml", new WorkerRush(types)));
 
-		matchups.add(new Pair<>("maps/9x8/NoWhereToRun9x8.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/NoWhereToRun9x8.xml", new LightRush(types)));
 
 		matchups.add(new Pair<>("maps/16x16/TwoBasesBarracks16x16.xml", new LightRush(types)));
 		matchups.add(new Pair<>("maps/16x16/basesWorkers16x16A.xml", new LightRush(types)));
@@ -69,7 +69,7 @@ public class PGSvsScripts {
 		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new WorkerRush(types)));
 		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new LightRush(types)));
 		matchups.add(new Pair<>("maps/24x24/DoubleGame24x24.xml", new LightRush(types)));
-		matchups.add(new Pair<>("maps/24x24/DoubleGame24x24.xml", new WorkerRush(types)));
+		matchups.add(new Pair<>("maps/DoubleGame24x24.xml", new WorkerRush(types)));
 
 		matchups.add(new Pair<>("maps/32x32/basesWorkers32x32A.xml", new LightRush(types)));
 		matchups.add(new Pair<>("maps/BWDistantResources32x32.xml", new LightRush(types)));
@@ -110,7 +110,7 @@ public class PGSvsScripts {
 				MatchData data;
 				
 				System.out.println("Round: #" + r);
-				System.out.println("Match is PGS vs " + entry.m_b);
+				System.out.println("Match is PGS vs " + entry.m_b + " in " + entry.m_a);
 				//runs two matches switching the player positions
 				data = runner.headlessMatch(pgs_s, entry.m_b, entry.m_a, r, types);
 				runner.recordMatchData("output", data);
