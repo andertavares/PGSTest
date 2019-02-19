@@ -68,7 +68,7 @@ public class PGSvsScripts {
 
 		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new WorkerRush(types)));
 		matchups.add(new Pair<>("maps/24x24/basesWorkers24x24A.xml", new LightRush(types)));
-		matchups.add(new Pair<>("maps/24x24/DoubleGame24x24.xml", new LightRush(types)));
+		matchups.add(new Pair<>("maps/DoubleGame24x24.xml", new LightRush(types)));
 		matchups.add(new Pair<>("maps/DoubleGame24x24.xml", new WorkerRush(types)));
 
 		matchups.add(new Pair<>("maps/32x32/basesWorkers32x32A.xml", new LightRush(types)));
@@ -102,19 +102,19 @@ public class PGSvsScripts {
 		
 		Runner runner = new Runner();
 		int rounds = 10;
-		
+
 		for(Pair<String, AI> entry : matchups){
 			//m_a is the map, m_b is the AI
-			
+
 			for(int r = 1; r <= rounds; r++){
 				MatchData data;
-				
+
 				System.out.println("Round: #" + r);
 				System.out.println("Match is PGS vs " + entry.m_b + " in " + entry.m_a);
 				//runs two matches switching the player positions
 				data = runner.headlessMatch(pgs_s, entry.m_b, entry.m_a, r, types);
 				runner.recordMatchData("output", data);
-				
+
 				System.out.println("- now it is " + entry.m_b + " vs PGS");
 				data = runner.headlessMatch(entry.m_b, pgs_s, entry.m_a, r, types);
 				runner.recordMatchData("output", data);
