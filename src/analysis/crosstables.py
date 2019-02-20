@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import re
 import glob
 import argparse
 from collections import defaultdict
@@ -25,7 +26,7 @@ def parse_file(path):
     return victory_count
 
 
-def analyse(inputdir):
+def results_per_map(inputdir):
     """
     Parses all result files from a directory, returning a dict.
     When used like: returned_dict[mapname][p1name][p2name], it gives
@@ -49,6 +50,32 @@ def analyse(inputdir):
     return victories
 
 
+def results_per_map_size(inputdir):
+    """
+    Parses all result files from a directory, returning a dict.
+    When used like: returned_dict[dimensions][p1name][p2name], it gives
+    the number of victores of p1 vs p2 in all map of the given dimensions.
+    The dimensions are a string in the form WxH (width vs height)
+    :param inputdir:
+    :return:
+    """
+    file_list = glob.glob(os.path.join(inputdir, '*.csv'))
+
+    # usage: victories[dimension][player1][player2]
+    victories = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 0)))
+
+    for path in file_list:
+        filename = os.path.splitext(os.path.basename(path))[0]
+        (p1, p2, mapname) = filename.split('_')
+        dimensions = re.match(r"\D*(\d+x\d+)\w*", mapname).group(1)
+
+        result = parse_file(path)
+        victories[dimensions][p1][p2] += result[0]
+        victories[dimensions][p2][p1] += result[1]
+
+    return victories
+
+
 def write_crosstable(results, outdir):
     """
     Receives the results, a 3d-dict, like results[mapname][p1name][p2name]
@@ -67,9 +94,9 @@ def write_crosstable(results, outdir):
         f.write(','.join(['x'] + [player for player in players]) + '\n')
 
         # writes the cells (one row at a time)
+        # a - is written if there's no record between a pair of players
         for p1 in players:
-            # f.write('%s,' p1)
-            f.write(','.join([p1] + [str(results[mapname][p1][p2]) for p2 in players]) + '\n')
+            f.write(','.join([p1] + [str(results[mapname][p1].get(p2, '-')) for p2 in players]) + '\n')
 
         f.close()
 
@@ -89,9 +116,18 @@ if __name__ == '__main__':
         'outdir', help='Directory to generate the crosstables'
     )
 
+    parser.add_argument(
+        '-d', '--dimensions', action='store_true',
+        help='Group by map dimensions rather than by the name'
+    )
+
     args = parser.parse_args()
 
-    data = analyse(args.inputdir)
+    if args.dimensions:
+        data = results_per_map_size(args.inputdir)
+    else:
+        data = results_per_map(args.inputdir)
+
     write_crosstable(data, args.outdir)
 
     print('DONE. Check the resulting files at %s' % args.outdir)
