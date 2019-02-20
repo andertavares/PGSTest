@@ -22,7 +22,7 @@ def parse_file(path):
         if winner == 0:
             victory_count[0] += 1
         elif winner == 1:
-            victory_count[0] += 1
+            victory_count[1] += 1
     return victory_count
 
 
@@ -46,6 +46,8 @@ def results_per_map(inputdir):
         result = parse_file(path)
         victories[mapname][p1][p2] += result[0]
         victories[mapname][p2][p1] += result[1]
+        #print('%s - %s v %s: %d' % (mapname, p1, p2, result[0]))
+        #print('%s - %s v %s: %d' % (mapname, p2, p1, result[1]))
 
     return victories
 
@@ -96,7 +98,7 @@ def write_crosstable(results, outdir):
         # writes the cells (one row at a time)
         # a - is written if there's no record between a pair of players
         for p1 in players:
-            f.write(','.join([p1] + [str(results[mapname][p1].get(p2, '-')) for p2 in players]) + '\n')
+            f.write('%s\n' % ','.join([p1] + [str(results[mapname][p1].get(p2, '-')) for p2 in players]))
 
         f.close()
 
