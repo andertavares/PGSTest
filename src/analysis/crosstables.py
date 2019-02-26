@@ -17,6 +17,7 @@ def parse_file(path):
 
     lines = open(path).readlines()[1:]
 
+    # TODO use numpy rather than scan through the whole file manually
     for line in lines:
         winner = int(line.split(',')[0])
         if winner == 0:
@@ -87,6 +88,8 @@ def write_crosstable(results, outdir):
     :param outdir:
     :return:
     """
+
+    # TODO customize separator (comma, tab, etc)
     for mapname in results:
         f = open(os.path.join(outdir, 'results_%s.csv' % mapname), 'w')
 

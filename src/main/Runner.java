@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ai.core.AI;
@@ -13,10 +14,44 @@ import data.MatchData;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.PlayerAction;
+import rts.units.UnitType;
 import rts.units.UnitTypeTable;
+import util.Pair;
 
 public class Runner {
-	
+
+	/**
+	 * Runs matches of p1 in the specified matchups, where each has an opponent and a map.
+	 * Each matchup is repeated for a number of rounds alternating the starting positions of each player.
+	 * The results of each match are written to the specified output dir
+	 * @param p1 the main AI under test
+	 * @param matchups a list where each element is an opponent and a map.
+	 * @param rounds the number of repetitions of each matchup
+	 * @param types the rules under which the matches will be played
+	 * @param outDir the directory here the results will be written
+	 * @throws Exception
+	 */
+	public void repeatedMatches(AI p1, List<Pair<String, AI>> matchups, int rounds, UnitTypeTable types, String outDir) throws Exception{
+
+		for(Pair<String, AI> entry : matchups){
+			//m_a is the map, m_b is the AI
+
+			for(int r = 1; r <= rounds; r++){
+				MatchData data;
+
+				System.out.println("Round: #" + r);
+				System.out.println("Match is " + p1 + " vs " + entry.m_b + " in " + entry.m_a);
+				//runs two matches switching the player positions
+				data = headlessMatch(p1, entry.m_b, entry.m_a, r, types);
+				recordMatchData(outDir, data);
+
+				System.out.println("- now it is " + entry.m_b + " vs "+ p1);
+				data = headlessMatch(entry.m_b, p1, entry.m_a, r, types);
+				recordMatchData(outDir, data);
+			}
+		}
+	}
+
 	public MatchData headlessMatch(AI ai1, AI ai2, String map, int roundNumber, UnitTypeTable types) throws Exception{
 		ArrayList<String> log = new ArrayList<>();
 		Duration matchDuration;
