@@ -52,6 +52,42 @@ public class Runner {
 		}
 	}
 
+	/**
+	 * Runs all possible pairings of the given AIs in each map.
+	 * Each pairing plays in each map for a number of rounds.
+	 * Each round has two matches, where the initial positions are swapped in the second
+	 * @param maps
+	 * @param aiList
+	 * @param rounds
+	 * @param types
+	 * @param outDir
+	 * @throws Exception
+	 */
+	public void mapsAndAIs(List<String> maps, List<AI> aiList, int rounds, UnitTypeTable types, String outDir) throws Exception{
+		for(String map : maps){
+			for(AI p1 : aiList){
+				for(AI p2 : aiList) {
+					if (p1 == p2) continue;
+
+					for (int r = 1; r <= rounds; r++) {
+						MatchData data;
+
+						System.out.println("Round: #" + r);
+						System.out.println("Match is " + p1 + " vs " + p2 + " in " + map);
+						//runs two matches switching the player positions
+						data = headlessMatch(p1, p2, map, r, types);
+						recordMatchData(outDir, data);
+
+						System.out.println("- now it is " + p2 + " vs " + p1);
+						data = headlessMatch(p2, p1, map, r, types);
+						recordMatchData(outDir, data);
+
+					}
+				}
+			}
+		}
+	}
+
 	public MatchData headlessMatch(AI ai1, AI ai2, String map, int roundNumber, UnitTypeTable types) throws Exception{
 		ArrayList<String> log = new ArrayList<>();
 		Duration matchDuration;
