@@ -50,7 +50,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
     int playerForThisComputation;
 
     //tupla scripts
-    String tuplaInScripts = "";
+    String nameComplement = "";
     AI randAI = null;
     int qtdSumPlayout = 1;
     //
@@ -83,7 +83,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
                 utt,
                 new AStarPathFinding());
         this.scripts = scripts;
-        this.tuplaInScripts = tuplaIndSc;
+        this.nameComplement = tuplaIndSc;
     }
 
     public PGSSCriptChoiceRandom(UnitTypeTable utt, List<AI> scripts, String tuplaIndSc, int qtdPlayout, int lookahead) {
@@ -94,7 +94,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
                 utt,
                 new AStarPathFinding());
         this.scripts = scripts;
-        this.tuplaInScripts = tuplaIndSc;
+        this.nameComplement = tuplaIndSc;
         this.qtdSumPlayout = qtdPlayout;
     }
 
@@ -272,7 +272,12 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
     @Override
     public String toString() {
         //return getClass().getSimpleName() + "(" + TIME_BUDGET + ", " + ITERATIONS_BUDGET + ", " + LOOKAHEAD + ", " + I + ", " + R + ", " + evaluation + ", " + pf + ")";
-        return getClass().getSimpleName() + "-" + tuplaInScripts + "-" + qtdSumPlayout + "-" + LOOKAHEAD;
+        //return getClass().getSimpleName() + "-" + nameComplement + "-" + qtdSumPlayout + "-" + LOOKAHEAD;
+        return getClass().getSimpleName() + nameComplement;
+    }
+
+    public void setNameComplement(String complement){
+        nameComplement = complement;
     }
 
     public int getPlayoutLookahead() {
