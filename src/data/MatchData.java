@@ -81,19 +81,19 @@ public class MatchData {
 	}
 	
 	/**
-	 * Return the name of the source-code class of the first player
+	 * Return the name of the first player
 	 * @return
 	 */
 	public String getP1Name(){
-		return p1.getClass().getSimpleName();
+		return p1.toString();
 	}
 	
 	/**
-	 * Return the name of the source-code class of the second player
+	 * Return the name of the second player
 	 * @return
 	 */
 	public String getP2Name(){
-		return p2.getClass().getSimpleName();
+		return p2.toString();
 	}
 	
 	/**
