@@ -50,6 +50,18 @@ public class Runner {
 		}
 	}
 
+	/**
+	 * Returns whether the match with the given configuration has been played.
+	 * It checks the existence of the file that would register the outcome, then
+	 * it counts the lines to see if the specified round has been played.
+	 * @param p1 the first player
+	 * @param p2 the second player
+	 * @param map the map
+	 * @param round the round number (for repeated experiments)
+	 * @param outDir the directory where output is being/will be written
+	 * @return whether the match with the given configuration has been played.
+	 * TODO implement a 'nextRound' which returns the index of the next round to play
+	 */
 	private boolean alreadyPlayed(AI p1, AI p2, String map, int round, String outDir){
 		String fileName = getFileName(p1, p2, map, outDir);
 		File underTest = new File(fileName);
