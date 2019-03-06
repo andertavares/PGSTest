@@ -81,19 +81,19 @@ public class MatchData {
 	}
 	
 	/**
-	 * Return the name of the first player
-	 * @return
+	 * Returns the first player
+	 * @return an instance of {@link AI} class
 	 */
-	public String getP1Name(){
-		return p1.toString();
+	public AI getP1(){
+		return p1;
 	}
 	
 	/**
-	 * Return the name of the second player
-	 * @return
+	 * Returns the second player
+	 * @return an instance of {@link AI} class
 	 */
-	public String getP2Name(){
-		return p2.toString();
+	public AI getP2(){
+		return p2;
 	}
 	
 	/**

@@ -1,8 +1,6 @@
 package main;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,6 +50,41 @@ public class Runner {
 		}
 	}
 
+	private boolean alreadyPlayed(AI p1, AI p2, String map, int round, String outDir){
+		String fileName = getFileName(p1, p2, map, outDir);
+		File underTest = new File(fileName);
+
+		// if the file does not exist, no match has been played with such configuration
+		if (!underTest.exists()){
+			return false;
+		}
+
+		// if the file exists, we must check how much rounds have been played (code from https://stackoverflow.com/a/5342096/1251716)
+		int numLines = 0;
+		try {
+			LineNumberReader count = new LineNumberReader(new FileReader(underTest));
+			while (count.skip(Long.MAX_VALUE) > 0) {
+				// Loop just in case the file is > Long.MAX_VALUE or skip() decides to not read the entire file
+			}
+
+			numLines = count.getLineNumber() + 1; // +1 because line index starts at 0
+		}
+		catch (IOException e){
+			System.err.println(
+				"An error occurred when trying to count the lines of file " + fileName +
+				"\n. Will report match as not played"
+			);
+			e.printStackTrace();
+			return false;
+		}
+
+		// discounts one from numLines because the first line is the header
+		// adds one to round because it is zero-indexed
+		return numLines - 1 >= round + 1;
+
+
+	}
+
 	/**
 	 * Runs all possible pairings of the given AIs in each map.
 	 * Each pairing plays in each map for a number of rounds.
@@ -70,22 +103,56 @@ public class Runner {
 					if (p1 == p2) continue;
 
 					for (int r = 1; r <= rounds; r++) {
+
+
 						MatchData data;
 
-						System.out.println("Round: #" + r);
-						System.out.println("Match is " + p1 + " vs " + p2 + " in " + map);
-						//runs two matches switching the player positions
-						data = headlessMatch(p1, p2, map, r, types);
-						recordMatchData(outDir, data);
+						// if match of p1 vs p2 already exists, skip it
+						if(alreadyPlayed(p1, p2, map, r, outDir)){
+							System.out.println(String.format(
+									"Skipping round %d of %s vs %s in map %s.",
+									r, p1, p2, map
+							));
+						}
+						else {
 
-						System.out.println("- now it is " + p2 + " vs " + p1);
-						data = headlessMatch(p2, p1, map, r, types);
-						recordMatchData(outDir, data);
+							System.out.println("Round: #" + r);
+							System.out.println("Match is " + p1 + " vs " + p2 + " in " + map);
+							//runs two matches switching the player positions
+							data = headlessMatch(p1, p2, map, r, types);
+							recordMatchData(outDir, data);
+						}
+
+						// if match of p2 vs p1 already exists, skip it
+						if(alreadyPlayed(p2, p1, map, r, outDir)){
+							System.out.println(String.format(
+								"Skipping round %d of %s vs %s in map %s.",
+								r, p2, p1, map
+							));
+						}
+						else {
+							System.out.println("- now it is " + p2 + " vs " + p1);
+							data = headlessMatch(p2, p1, map, r, types);
+							recordMatchData(outDir, data);
+						}
 
 					}
 				}
 			}
 		}
+	}
+
+	private String getFileName(AI p1, AI p2, String map, String outDir){
+		//ensures outDir has a trailing slash
+		if (!outDir.endsWith("/")) {
+			outDir += "/";
+		}
+
+		//removes the trailing file extension from the map (usually .xml)
+		File mapFile = new File(map);
+		map = mapFile.getName().replaceFirst("[.][^.]+$", "");
+
+		return outDir + p1 + "_" + p2 + "_" + map + ".csv";
 	}
 
 	public MatchData headlessMatch(AI ai1, AI ai2, String map, int roundNumber, UnitTypeTable types) throws Exception{
@@ -220,12 +287,7 @@ public class Runner {
 	
 	public void recordMatchData(String outDir, MatchData data){
 		
-		//ensures outDir has a trailing slash
-		if (!outDir.endsWith("/")) { 
-			 outDir += "/";
-        }
-		
-		String fileName = outDir + data.getP1Name() + "_" + data.getP2Name() + "_" + data.getMapName() + ".csv";
+		String fileName = getFileName(data.getP1(), data.getP2(), data.getMap(), outDir);
         File output = new File(fileName);
         
         System.out.println("Output file: " + output.getAbsolutePath());
