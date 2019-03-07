@@ -12,6 +12,8 @@ import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerDefense;
 import ai.abstraction.WorkerRush;
 import ai.abstraction.pathfinding.AStarPathFinding;
+import ai.asymmetric.PGS.PGSLightRushPlayout;
+import ai.asymmetric.PGS.PGSNoPlayout;
 import ai.asymmetric.PGS.PGSSCriptChoiceRandom;
 import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
@@ -44,7 +46,11 @@ public class PGSvsScripts {
 			testPlanningTime();
 		}
 
-		System.out.println("Done.");
+		else if (args[0].equalsIgnoreCase(("playouts"))){
+			testPlayoutPolicies();
+		}
+
+		System.out.println("Finished.");
 	}
 
 
@@ -122,23 +128,7 @@ public class PGSvsScripts {
 	public static void testPlanningTime(){
 		UnitTypeTable types = new UnitTypeTable();
 
-		List<String> maps = new ArrayList<>();
-
-		maps.add("maps/8x8/basesWorkers8x8A.xml");
-		maps.add("maps/8x8/FourBasesWorkers8x8.xml");
-
-		maps.add("maps/NoWhereToRun9x8.xml");
-
-		maps.add("maps/16x16/TwoBasesBarracks16x16.xml");
-		maps.add("maps/16x16/basesWorkers16x16A.xml");
-
-		maps.add("maps/24x24/basesWorkers24x24A.xml");
-		maps.add("maps/24x24/basesWorkers24x24A.xml");
-		maps.add("maps/DoubleGame24x24.xml");
-		maps.add("maps/DoubleGame24x24.xml");
-
-		maps.add("maps/32x32/basesWorkers32x32A.xml");
-		maps.add("maps/BWDistantResources32x32.xml");
+		List<String> maps = getAIIDE18Maps();
 
 		List<AI> portfolio = getPGSSPortfolio(types);
 
@@ -187,6 +177,61 @@ public class PGSvsScripts {
 		}
 	}
 
+	public static void testPlayoutPolicies(){
+		UnitTypeTable types = new UnitTypeTable();
+
+		List<String> maps = getAIIDE18Maps();
+
+		List<AI> portfolio = getPGSSPortfolio(types);
+
+		//instantiates PGS^s from the paper 'Evolving Action Abstractions'
+		//parameters:
+		int time = 100;
+		int playouts = -1; 	//do as many playouts as you can
+		int lookahead = 100; //lookahead in number of frames
+		int pgsIter = 1; //I in PGS class, not used
+		int oppReps = 1; //R in PGS class, not used
+
+		// creates the instances of PGS.s with different playout policies
+		PGSSCriptChoiceRandom pgsRandom = new PGSSCriptChoiceRandom(
+				time, playouts, lookahead, pgsIter, oppReps,
+				new SimpleSqrtEvaluationFunction3(), types,
+				new AStarPathFinding(), portfolio
+		);
+		pgsRandom.setNameComplement("-Random");
+
+		PGSNoPlayout pgsNoPlayout = new PGSNoPlayout(
+			time, playouts, lookahead, pgsIter, oppReps,
+			types, new AStarPathFinding(), portfolio
+		);
+		pgsNoPlayout.setNameComplement("-NoPlayout");
+
+		PGSLightRushPlayout pgsLR = new PGSLightRushPlayout(
+				time, playouts, lookahead, pgsIter, oppReps,
+				types, new AStarPathFinding(), portfolio
+		);
+		pgsLR.setNameComplement("-LR");
+
+		// puts the AIs into a list and runs the experiment for 10 rounds
+		List<AI> pgsList = new ArrayList<>();
+		pgsList.add(pgsRandom);
+		pgsList.add(pgsNoPlayout);
+		pgsList.add(pgsLR);
+
+		Runner runner = new Runner();
+		int rounds = 10;
+
+		try {
+			runner.mapsAndAIs(maps, pgsList, rounds, types, "output");
+		}
+		catch (Exception e){
+			System.err.println("An error occurred");
+			e.printStackTrace();
+		}
+
+
+	}
+
 	/**
 	 * Returns the 9 scripts of PGS.s
 	 * @param types the UnitTypeTable that some scripts require
@@ -204,6 +249,32 @@ public class PGSvsScripts {
 				new RangedDefense(types), //end: 4 defenses
 				new EconomyMilitaryRush(types)
 		);
+	}
+
+	/**
+	 * Returns the list of maps used in the paper: Action Abstractions for CMAB Tree Search
+	 * @return the list of maps used in the paper: Action Abstractions for CMAB Tree Search
+	 */
+	private static List<String> getAIIDE18Maps(){
+		List<String> maps = new ArrayList<>();
+
+		maps.add("maps/8x8/basesWorkers8x8A.xml");
+		maps.add("maps/8x8/FourBasesWorkers8x8.xml");
+
+		maps.add("maps/NoWhereToRun9x8.xml");
+
+		maps.add("maps/16x16/TwoBasesBarracks16x16.xml");
+		maps.add("maps/16x16/basesWorkers16x16A.xml");
+
+		maps.add("maps/24x24/basesWorkers24x24A.xml");
+		maps.add("maps/24x24/basesWorkers24x24A.xml");
+		maps.add("maps/DoubleGame24x24.xml");
+		maps.add("maps/DoubleGame24x24.xml");
+
+		maps.add("maps/32x32/basesWorkers32x32A.xml");
+		maps.add("maps/BWDistantResources32x32.xml");
+
+		return maps;
 	}
 
 }
