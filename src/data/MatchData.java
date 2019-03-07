@@ -24,6 +24,12 @@ public class MatchData {
 	 * Draw or timeout: -1
 	 */
 	public int winner;
+
+	/**
+	 * The final score of the match, from the point of view of player 1.
+	 * It is in the interval [-1, 1], indicating total loss or total win for player 1
+	 */
+	public double finalScore;
 	
 	/**
 	 * First player
@@ -69,7 +75,7 @@ public class MatchData {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.mapFileName = map;
-	} 
+	}
 	
 	/**
 	 * Returns the map name, without the complete path and file extension

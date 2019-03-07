@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ai.core.AI;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import data.MatchData;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -267,13 +268,13 @@ public class Runner {
 	
 	    } while (!gameover && (gs.getTime() < MAXCYCLES) && (matchDuration.toMinutes() < 7));
 
-	    // game over, record post-game data
+	    // game over, record post-game data. TODO create a method in MatchData to record this
 	    data.winner = gs.winner();
 	    data.frames = gs.getTime();
 	    data.duration = matchDuration;
+	    data.finalScore = new SimpleSqrtEvaluationFunction3().evaluate(0, 1, gs);
 
 	    
-	    		
 	    // compute the average time per frame
 	    data.avgTimeP1 = (data.totalTimeP1 / (float) gs.getTime());
 	    data.avgTimeP2 = (data.totalTimeP2 / (float) gs.getTime());
@@ -309,7 +310,7 @@ public class Runner {
     		FileWriter newFile;
 			try {
 				newFile = new FileWriter(output, false); //test if the file exists first, because it creates the file upon instantiation
-				newFile.write("#winner,frames,duration,totalTime1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2\n");
+				newFile.write("#winner,frames,duration,totalTime1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2,finalScore\n");
 	    		newFile.close();
 			} catch (IOException e) {
 				System.err.println("Error while creating the output file");
@@ -322,15 +323,16 @@ public class Runner {
     	FileWriter appender;
 		try {
 			appender = new FileWriter(output, true);
-			// field order: winner,frames,duration(s),totalTimeAI1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2
+			// field order: winner,frames,duration(s),totalTimeAI1,minTime1,maxTime1,avgTime1,totalTimeAI2,minTime2,maxTime2,avgTime2,finalScore
 			appender.write(String.format( Locale.US, //ensure dot as a decimal separator
 				"%d,%d,%d," //winner,frames,duration
 				+ "%d,%d,%d,%f," //total1,min1,max1,avg1
-				+ "%d,%d,%d,%f%n", //total2,min2,max2,avg2,line break 
-				
+				+ "%d,%d,%d,%f,%f%n", //total2,min2,max2,avg2,finalScore line break
+
 				data.winner, data.frames, data.duration.getSeconds(), 
 				data.totalTimeP1, data.minTimeP1, data.maxTimeP1, data.avgTimeP1,
-				data.totalTimeP2, data.minTimeP2, data.maxTimeP2, data.avgTimeP2
+				data.totalTimeP2, data.minTimeP2, data.maxTimeP2, data.avgTimeP2,
+				data.finalScore
 			));
 			//logger.debug("Successfully wrote to {}", path);
 	    	appender.close();
