@@ -3,10 +3,8 @@ package ai.asymmetric.PGS;
 import ai.abstraction.pathfinding.PathFinding;
 import ai.asymmetric.common.UnitScriptData;
 import ai.core.AI;
-import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import rts.GameState;
-import rts.PlayerAction;
 import rts.units.UnitTypeTable;
 
 import java.util.List;
