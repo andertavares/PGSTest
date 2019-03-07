@@ -198,19 +198,18 @@ public class PGSvsScripts {
 				new SimpleSqrtEvaluationFunction3(), types,
 				new AStarPathFinding(), portfolio
 		);
-		pgsRandom.setNameComplement("-Random");
 
 		PGSNoPlayout pgsNoPlayout = new PGSNoPlayout(
 			time, playouts, lookahead, pgsIter, oppReps,
 			types, new AStarPathFinding(), portfolio
 		);
-		pgsNoPlayout.setNameComplement("-NoPlayout");
+		//pgsNoPlayout.setNameComplement("-NoPlayout");
 
 		PGSLightRushPlayout pgsLR = new PGSLightRushPlayout(
 				time, playouts, lookahead, pgsIter, oppReps,
 				types, new AStarPathFinding(), portfolio
 		);
-		pgsLR.setNameComplement("-LR");
+		//pgsLR.setNameComplement("-LR");
 
 		// puts the AIs into a list and runs the experiment for 10 rounds
 		List<AI> pgsList = new ArrayList<>();
