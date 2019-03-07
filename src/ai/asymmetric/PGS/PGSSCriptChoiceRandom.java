@@ -419,7 +419,7 @@ public class PGSSCriptChoiceRandom extends AIWithComputationBudget implements In
         }
     }
 
-    private PlayerAction getActionsUScript(int player, UnitScriptData uScriptPlayer, GameState gs2) {
+    protected PlayerAction getActionsUScript(int player, UnitScriptData uScriptPlayer, GameState gs2) {
         PlayerAction temp = new PlayerAction();
         for (Unit u : gs2.getUnits()) {
             if (u.getPlayer() == player) {
