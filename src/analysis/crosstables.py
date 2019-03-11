@@ -1,9 +1,11 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import os
 import re
 import glob
 import argparse
+from codecs import decode
 from collections import defaultdict
 
 
@@ -79,7 +81,7 @@ def results_per_map_size(inputdir):
     return victories
 
 
-def write_crosstable(results, outdir, view='percent'):
+def write_crosstable(results, outdir, view='percent', separator=','):
     """
     Receives the results, a 3d-dict, like results[mapname][p1name][p2name]
     and generates one file per mapname in outdir. The file is a .csv with
@@ -87,6 +89,7 @@ def write_crosstable(results, outdir, view='percent'):
     :param results:
     :param outdir:
     :param view: 'percent' or 'raw' to give either the percent of victories or the raw number
+    :param separator: the separator to generate the output crosstable.
     :return:
     """
 
@@ -104,7 +107,7 @@ def write_crosstable(results, outdir, view='percent'):
         # writes the cells (one row at a time)
         # a - is written if there's no record between a pair of players
         for p1 in players:
-            f.write('%s\n' % ','.join([p1] + [view_func(results[mapname], p1, p2) for p2 in players]))
+            f.write('%s\n' % separator.join([p1] + [view_func(results[mapname], p1, p2) for p2 in players]))
 
         f.close()
 
@@ -163,6 +166,12 @@ if __name__ == '__main__':
         help='Type of output to view: percent or raw number of victories.'
     )
 
+    parser.add_argument(
+        '-s', '--sep', default=',',
+        help='The separator to generate the output crosstable. '
+             'Note: specify special characters between quotes (e.g. "\\t")'
+    )
+
     args = parser.parse_args()
 
     if args.dimensions:
@@ -170,6 +179,6 @@ if __name__ == '__main__':
     else:
         data = results_per_map(args.inputdir)
 
-    write_crosstable(data, args.outdir, args.view)
+    write_crosstable(data, args.outdir, args.view, decode(args.sep, 'unicode_escape'))
 
     print('DONE. Check the resulting files at %s' % args.outdir)
