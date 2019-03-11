@@ -93,14 +93,13 @@ def write_crosstable(results, outdir, view='percent', separator=','):
     :return:
     """
 
-    # TODO customize separator (comma, tab, etc)
     for mapname in results:
         f = open(os.path.join(outdir, 'results_%s.csv' % mapname), 'w')
 
         players = results[mapname]
 
         # writes the header
-        f.write(','.join(['x'] + [player for player in players]) + '\n')
+        f.write(separator.join(['x'] + [player for player in players]) + '\n')
 
         view_func = win_percent if view == 'percent' else win_number
 
