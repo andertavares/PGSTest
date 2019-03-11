@@ -79,13 +79,14 @@ def results_per_map_size(inputdir):
     return victories
 
 
-def write_crosstable(results, outdir):
+def write_crosstable(results, outdir, view='percent'):
     """
     Receives the results, a 3d-dict, like results[mapname][p1name][p2name]
     and generates one file per mapname in outdir. The file is a .csv with
     a crosstable: the number of wins of the row player against the col. player
     :param results:
     :param outdir:
+    :param view: 'percent' or 'raw' to give either the percent of victories or the raw number
     :return:
     """
 
@@ -98,12 +99,43 @@ def write_crosstable(results, outdir):
         # writes the header
         f.write(','.join(['x'] + [player for player in players]) + '\n')
 
+        view_func = win_percent if view == 'percent' else win_number
+
         # writes the cells (one row at a time)
         # a - is written if there's no record between a pair of players
         for p1 in players:
-            f.write('%s\n' % ','.join([p1] + [str(results[mapname][p1].get(p2, '-')) for p2 in players]))
+            f.write('%s\n' % ','.join([p1] + [view_func(results[mapname], p1, p2) for p2 in players]))
 
         f.close()
+
+
+def win_number(data, p1, p2):
+    """
+    Returns a string with the number of victories of p1 versus p2 from a dict
+    referenced in a 'tabular' form (data[p1][p2]). If data is absent, returns -
+    :param data: a dict, where data[p1][p2] will give the number of victories of p1 vs p2
+    :param p1:
+    :param p2:
+    :return:
+    """
+    return str(data[p1].get(p2, '-'))
+
+
+def win_percent(data, p1, p2):
+    """
+    Returns a string with the win percent, with 2 decimal places, of p1 versus p2 from a
+    dict with the number of victories
+    :param data: a dict, where data[p1][p2] will give the number of victories of p1 vs p2
+    :param p1:
+    :param p2:
+    :return: a string with the win percent or '-' if data is absent
+    """
+    if p2 not in data[p1] and p1 not in data[p2]:
+        return '-'
+
+    total = data[p1][p2] + data[p2][p1]
+
+    return '%.2f' % (data[p1][p2] * 100.0 / total if total != 0 else 0)
 
 
 if __name__ == '__main__':
@@ -126,6 +158,11 @@ if __name__ == '__main__':
         help='Group by map dimensions rather than by the name'
     )
 
+    parser.add_argument(
+        '-v', '--view', choices=['percent', 'raw'], default='percent',
+        help='Type of output to view: percent or raw number of victories.'
+    )
+
     args = parser.parse_args()
 
     if args.dimensions:
@@ -133,6 +170,6 @@ if __name__ == '__main__':
     else:
         data = results_per_map(args.inputdir)
 
-    write_crosstable(data, args.outdir)
+    write_crosstable(data, args.outdir, args.view)
 
     print('DONE. Check the resulting files at %s' % args.outdir)
